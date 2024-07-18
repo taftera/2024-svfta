@@ -187,6 +187,55 @@ npm install
 ></script>
 ```
 
+Or use the local version via Vite
+
+```sh
+npm install alpinejs
+```
+Create a new file in the src folder called `alpine.js` and add the following code:
+
+```js
+import Alpine from 'alpinejs'
+window.Alpine = Alpine
+Alpine.start()
+```
+  
+Then update the vite.config.js file to include the new file:
+
+```js
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  root: "src",
+  build: {
+    outDir: path.resolve(__dirname, "dist"),
+    rollupOptions: {
+      input: {
+        alpine: path.resolve(__dirname, "src/alpine.js"),
+        counter: "src/counter/main.jsx",
+        message: "src/message/main.jsx",
+      },
+      output: {
+        dir: "assets",
+        entryFileNames: "vite-[name].js",
+        chunkFileNames: "vite-[name].js",
+        assetFileNames: "vite-[name].[ext]",
+      },
+    },
+    watch: {},
+    emptyOutDir: false,
+  },
+});
+
+```
+```liquid
+<script type="module" src="{{ 'vite-alpine.js' | asset_url }}"></script>
+```
+
 - Just before the </body> tag
 
 ### Step 11: Add Shopify Prettier Support
