@@ -342,7 +342,7 @@ touch framework-snippet.liquid
 1. Install gulp dependencies and create a gulp file
 
 ```sh
-npm install gulp gulp-clean-css gulp-rename --save-dev
+npm install gulp gulp-clean-css gulp-minify gulp-rename --save-dev
 touch gulp.cjs
 ```
 
@@ -351,29 +351,54 @@ touch gulp.cjs
 ```js
 const gulp = require('gulp');
 const cleanCSS = require('gulp-clean-css');
+const minify = require('gulp-minify');
 const rename = require('gulp-rename');
 
-const assetFileNames = ['./assets/<file-name>.css'];
+const cssFileNames = ['./assets/<file-name>.css'];
+const jsFileNames = ['./assets/<file-name>.js'];
 
 function minifyCSS() {
   return gulp
-    .src(assetFileNames)
+    .src(cssFileNames)
     .pipe(cleanCSS())
     .pipe(
       rename(function (path) {
         path.basename += '.min';
-      })
+      }),
     )
     .pipe(gulp.dest('./assets/'));
 }
 
 gulp.task('minify-css', minifyCSS);
 
+function minifyJS() {
+  return gulp
+    .src(jsFileNames)
+    .pipe(minify({
+      mangle: false,
+      noSource: true, // This option prevents generating the original file copy
+      ext: {
+        min: '.min.js'
+      }
+    }))
+    .pipe(gulp.dest('./assets/'));
+};
+
+gulp.task('minify-js', minifyJS);
+
+gulp.task('build', gulp.series(['minify-css', 'minify-js']));
+
 gulp.task('watch', () => {
-  gulp.watch(assetFileNames, minifyCSS);
+  gulp.watch(cssFileNames, minifyCSS);
+  gulp.watch(jsFileNames, { ignoreInitial: false }, minifyJS)
+    .on('change', function(event) {
+      if (!event.endsWith('.min.js')) {
+        minifyJS();
+      }
+    });
 });
 
-gulp.task('default', gulp.series('minify-css', 'watch'));
+
 ```
 
 - _NOTE:_ Replace the <file-name> with the name of the file you want to minify.
