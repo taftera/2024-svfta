@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-I'm assuming you've already have a working environment w/ Node, NPM, Git, Vite, Gulp, Shopify-cli installed.
+You most already have a working environment w/ Node, NPM, Git & Shopify-cli.
 If not, please install them first.
 
 ## Installation
@@ -48,8 +48,8 @@ npm install --save-dev npm-run-all
 1. Update the ./vite.config.js
 
 ```js
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -57,13 +57,13 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        counter: 'src/main.jsx',
+        counter: "src/main.jsx",
       },
       output: {
-        dir: 'assets',
-        entryFileNames: 'vite-[name].js',
-        chunkFileNames: 'vite-[name].js',
-        assetFileNames: 'vite-[name].[ext]',
+        dir: "assets",
+        entryFileNames: "vite-[name].js",
+        chunkFileNames: "vite-[name].js",
+        assetFileNames: "vite-[name].[ext]",
       },
     },
     watch: {},
@@ -82,23 +82,22 @@ export default defineConfig({
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './config/*.json',
-    './layout/*.liquid',
-    './assets/*.liquid',
-    './sections/*.liquid',
-    './snippets/*.liquid',
-    './templates/*.liquid',
-    './templates/*.json',
-    './templates/customers/*.liquid',
+    "./config/*.json",
+    "./layout/*.liquid",
+    "./assets/*.liquid",
+    "./sections/*.liquid",
+    "./snippets/*.liquid",
+    "./templates/*.liquid",
+    "./templates/*.json",
+    "./templates/customers/*.liquid",
   ],
   theme: {
     screens: {
-      sm: '320px',
-      md: '750px',
-      lg: '990px',
-      xl: '1200px',
-      xxl: '1400px',
-      pageMaxWidth: '1200px',
+      sm: "320px",
+      md: "750px",
+      lg: "990px",
+      xl: "1200px",
+      xxl: "1400px",
     },
     extend: {},
   },
@@ -114,8 +113,7 @@ module.exports = {
 1. Create tailwindcss file
 
 ```sh
-cd src
-touch tailwind.css
+touch src/tailwind.css
 ```
 
 2. Add the next info
@@ -190,34 +188,37 @@ npm install
 Or use the local version via Vite
 
 ```sh
-npm install alpinejs
+npm install --save-dev alpinejs
 ```
+
 Create a new file in the src folder called `alpine.js` and add the following code:
 
-```js
-import Alpine from 'alpinejs'
-window.Alpine = Alpine
-Alpine.start()
+```sh
+touch src/alpine.js
 ```
-  
+
+```js
+import Alpine from "alpinejs";
+window.Alpine = Alpine;
+Alpine.start();
+```
+
 Then update the vite.config.js file to include the new file:
 
 ```js
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  root: "src",
   build: {
-    outDir: path.resolve(__dirname, "dist"),
     rollupOptions: {
       input: {
-        alpine: path.resolve(__dirname, "src/alpine.js"),
-        counter: "src/counter/main.jsx",
-        message: "src/message/main.jsx",
+        counter: "src/main.jsx",
+      },
+      external: {
+        alpine: "src/alpine.js",
       },
       output: {
         dir: "assets",
@@ -230,8 +231,8 @@ export default defineConfig({
     emptyOutDir: false,
   },
 });
-
 ```
+
 ```liquid
 <script type="module" src="{{ 'vite-alpine.js' | asset_url }}"></script>
 ```
@@ -297,7 +298,7 @@ npm run build:deploy
 
 ```html
 <div x-data="{ open: false }">
-  <button @click="open = true">Expand</button>
+  <button @click="open = !open">Expand</button>
   <span x-show="open"> Content... </span>
 </div>
 ```
@@ -311,8 +312,7 @@ npm run build:deploy
 1. Create a Vite/React Rendering file
 
 ```sh
-cd assets
-touch framework-snippet.liquid
+touch snippets/framework-snippet.liquid
 ```
 
 ```liquid
@@ -343,19 +343,19 @@ touch framework-snippet.liquid
 
 ```sh
 npm install gulp gulp-clean-css gulp-minify gulp-rename --save-dev
-touch gulp.cjs
+touch gulpfile.cjs
 ```
 
 2. Paste the following code
 
 ```js
-const gulp = require('gulp');
-const cleanCSS = require('gulp-clean-css');
-const minify = require('gulp-minify');
-const rename = require('gulp-rename');
+const gulp = require("gulp");
+const cleanCSS = require("gulp-clean-css");
+const minify = require("gulp-minify");
+const rename = require("gulp-rename");
 
-const cssFileNames = ['./assets/<file-name>.css'];
-const jsFileNames = ['./assets/<file-name>.js'];
+const cssFileNames = ["./assets/<file-name>.css"];
+const jsFileNames = ["./assets/<file-name>.js"];
 
 function minifyCSS() {
   return gulp
@@ -363,42 +363,43 @@ function minifyCSS() {
     .pipe(cleanCSS())
     .pipe(
       rename(function (path) {
-        path.basename += '.min';
+        path.basename += ".min";
       }),
     )
-    .pipe(gulp.dest('./assets/'));
+    .pipe(gulp.dest("./assets/"));
 }
 
-gulp.task('minify-css', minifyCSS);
+gulp.task("minify-css", minifyCSS);
 
 function minifyJS() {
   return gulp
     .src(jsFileNames)
-    .pipe(minify({
-      mangle: false,
-      noSource: true, // This option prevents generating the original file copy
-      ext: {
-        min: '.min.js'
-      }
-    }))
-    .pipe(gulp.dest('./assets/'));
-};
+    .pipe(
+      minify({
+        mangle: false,
+        noSource: true, // This option prevents generating the original file copy
+        ext: {
+          min: ".min.js",
+        },
+      }),
+    )
+    .pipe(gulp.dest("./assets/"));
+}
 
-gulp.task('minify-js', minifyJS);
+gulp.task("minify-js", minifyJS);
 
-gulp.task('build', gulp.series(['minify-css', 'minify-js']));
+gulp.task("build", gulp.series(["minify-css", "minify-js"]));
 
-gulp.task('watch', () => {
+gulp.task("watch", () => {
   gulp.watch(cssFileNames, minifyCSS);
-  gulp.watch(jsFileNames, { ignoreInitial: false }, minifyJS)
-    .on('change', function(event) {
-      if (!event.endsWith('.min.js')) {
+  gulp
+    .watch(jsFileNames, { ignoreInitial: false }, minifyJS)
+    .on("change", function (event) {
+      if (!event.endsWith(".min.js")) {
         minifyJS();
       }
     });
 });
-
-
 ```
 
 - _NOTE:_ Replace the <file-name> with the name of the file you want to minify.
@@ -406,3 +407,27 @@ gulp.task('watch', () => {
 ---
 
 Last updated: 20240718
+
+When adding dotenv variables first install the package
+
+```sh
+npm install dotenv --save
+```
+
+Then add the following code to the vite.config.js file
+
+```js
+import dotenv from "dotenv";
+
+// Load environment variables from .env file
+dotenv.config();
+
+export default defineConfig({
+  plugins: [react()], // this should be already in file
+  define: {
+    "process.env": process.env,
+  },
+});
+```
+
+- _NOTE:_ All Vite .env variables should be prefixed with VITE\_ to be used on the client-side.
